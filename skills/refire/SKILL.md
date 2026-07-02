@@ -3,7 +3,7 @@ name: refire
 description: Turns validated review findings into a scoped fix run. Use after /sous-chef:taste when the user says to fix the findings, apply the review, or refire it. Takes the CONFIRMED findings (or a review the user pastes), fires a fix ticket at the implementer, then re-verifies each finding at its cited location. Not for new feature work; that is a fresh /sous-chef:fire.
 ---
 
-# Refire: the plate failed the pass, send it back
+# Refire - the plate failed the pass, send it back
 
 A refire is a fix run with the review as its spec. The findings are already validated
 (that was taste's job), so the ticket is unusually precise: file, line, failure
@@ -26,12 +26,12 @@ Same as fire, and for the same reasons:
 1. Git repo with at least one commit (`git rev-parse HEAD`).
 2. `test -f ~/.codex/sous-chef.config.toml`; missing means stop and offer
    `/sous-chef:mise` (Codex silently ignores a missing profile).
-3. Snapshot the tree: save `git diff` and `git status --short` into the job dir as the
-   baseline. The tree usually is dirty here (it holds the diff that was just tasted);
-   that is expected, the baseline is what separates the tasted diff from the refire's
-   changes.
-4. Mint a fresh job dir: `JOB=$(mktemp -d "$SCRATCHPAD/refire-XXXXXX")`
+3. Mint a fresh job dir: `JOB=$(mktemp -d "$SCRATCHPAD/refire-XXXXXX")`
    (`$SCRATCHPAD` is your session scratchpad directory; substitute its absolute path).
+4. Snapshot the tree: save `git diff` and `git status --short` into `$JOB` as the
+   baseline. The tree is usually dirty here (it holds the diff that was just tasted);
+   that is expected; the baseline is what separates the tasted diff from the refire's
+   changes.
 
 ## The refire ticket
 
@@ -57,8 +57,8 @@ line (what, which model, expected minutes, log path, cancel offer), no polling.
 At plating, in addition to fire's outcome checks (exit code, result file present,
 sandbox banner):
 
-1. Open each finding's cited location and confirm the defect is gone. A finding-by-
-   finding checklist, not a vibe.
+1. Open each finding's cited location and confirm the defect is gone. A
+   finding-by-finding checklist, not a vibe.
 2. Run the verification commands yourself.
 3. Diff against the pre-refire baseline: only finding-scoped changes should appear.
    Anything else gets reverted or flagged to the user.

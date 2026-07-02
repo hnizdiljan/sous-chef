@@ -7,39 +7,49 @@
 A Claude Code plugin for the two-model kitchen: Claude plans the menu, writes the
 ticket, and tastes every plate before it leaves the kitchen. Codex CLI (GPT-5.5 at
 `xhigh`, its highest reasoning effort; GLM-5.2 opt-in) does the knife work - in a
-sandbox, in the background,
-with no say over what ships. Spend Claude tokens on judgment and Codex tokens on bulk:
-in the measured setup this pattern is built on, [Codex did ~20x the implementation
-work](https://madewithlove.com/blog/claude-up-front-codex-in-the-back/) per
-orchestration round trip, and two mid-tier subscriptions often beat one top-tier one.
+sandbox, in the background, with no say over what ships. Spend Claude tokens on
+judgment and Codex tokens on bulk: in the measured setup this pattern is built on,
+[Codex did ~20x the implementation work](https://madewithlove.com/blog/claude-up-front-codex-in-the-back/)
+per orchestration round trip, and two mid-tier subscriptions often beat one
+top-tier one.
 
 ## What it looks like
 
 ```text
-> /sous-chef:fire migrate the auth module off the deprecated session API
+> /sous-chef:serve migrate the auth module off the deprecated session API
 
+Claude   "Full serve at gpt-5.5: implement, cross-review, fix, verify.
+         2-3 Codex runs, ~15-45 min. I'll report when it's plated."
 Claude   writes the ticket - files to touch, files NOT to touch, done-when
-         criteria, verification commands
-Claude   "Firing at gpt-5.5: auth migration, ~10-20 min, log at …/job.log -
-         say the word to cancel." (background; you keep working)
+         criteria, verification commands - and fires it (background)
 Codex    implements. 11 files changed. Claims "all tests pass."
 Claude   reviews the diff line by line, re-runs pnpm test + tsc itself
-Claude   catches it: middleware change has no test coverage despite the claim.
-         Fires one delta ticket.
-Claude   second diff verified - 42 tests pass, types clean. Accepted.
+Codex    cross-reviews the diff read-only; 3 findings
+Claude   validates them against the code: 2 confirmed, 1 refuted
+Claude   refires the 2 confirmed findings as a scoped fix ticket
+Claude   re-verifies each finding at its cited location; checks green
+Claude   "Served: auth migration, 11 files, 42 tests pass, 2 review
+         findings fixed, 1 refuted. Two models agree; plate's yours."
 ```
 
-Codex saying "tests pass" is a sentence; `pnpm test` output is a fact.
+One command in, one plated result out. Codex saying "tests pass" is a sentence;
+`pnpm test` output is a fact - Claude re-runs everything itself.
 
 ## The brigade
 
 | Command | Kitchen term | What it does |
 |---|---|---|
+| `/sous-chef:serve` | Full service | The autonomous one: fire, taste, refire, verify - composed into a single pass with a hard run budget. One announcement up front, one report at the end, no questions in between. This is the command you'll actually use. |
 | `/sous-chef:fire` | Fire the order (start cooking it) | Writes a structured ticket and hands it to `codex exec` in the background. Claude announces the handoff, reviews the diff against a pre-fire baseline, and re-runs verification itself before accepting. |
 | `/sous-chef:taste` | The chef tastes every plate | Cross-model review of your current diff: Codex reviews read-only, then Claude validates every finding against the actual code and filters false positives before you see them. On-demand - you decide when a second opinion is worth the tokens. |
 | `/sous-chef:refire` | Send the plate back | Turns the confirmed findings from a taste into a scoped fix ticket, fires it, then re-verifies each finding at its cited location. Fire, taste, refire: the loop closes without you copying findings around. |
-| `/sous-chef:simmer` | Reduce (simmer down) until done | An implement-verify loop: Codex works in fresh iterations on a dedicated branch; Claude runs the checks and judges every lap against a machine-checkable goal. Lap caps, git checkpoints, no-progress detection. |
+| `/sous-chef:simmer` | Reduce (simmer down) until done | The loop, for goal-shaped work: Codex works in fresh iterations on a dedicated branch; Claude runs the checks and judges every lap against a machine-checkable goal. Lap caps, git checkpoints, no-progress detection. |
 | `/sous-chef:mise` | Mise en place (prep before service) | Setup: checks Codex CLI + auth, installs the delegation profile, scaffolds `AGENTS.md` in your repo, offers the routing policy for your `CLAUDE.md`. |
+
+Rule of thumb: **`/serve` for a task** (one order, cooked properly, bounded), **`/simmer`
+for a goal** (keep lapping until a command passes: a test suite, a benchmark). Fire,
+taste, and refire are the same stations à la carte, for when you want to drive each
+one yourself.
 
 ## Install
 
@@ -116,6 +126,7 @@ Full sources for these and every other decision: [docs/design.md](docs/design.md
 ## What's in the box
 
 ```text
+skills/serve/         the autonomous pipeline: fire, taste, refire, verify, report
 skills/fire/          delegation skill + ticket template + GLM routes
 skills/taste/         cross-review skill + review prompt template
 skills/refire/        fix skill: confirmed findings become a scoped fix run
@@ -132,7 +143,8 @@ docs/design.md        the receipts: sources for every design decision
 divergences, each with receipts in [docs/design.md](docs/design.md): (1) no stop-time
 review gate - OpenAI's own README warns it "can create a long-running Claude/Codex
 loop and may drain usage limits quickly"; `/taste` runs on demand, so a human decides
-when a second opinion is worth the tokens. (2) `/taste` validates every Codex finding
+when a second opinion is worth the tokens. (`/serve` runs taste inside a single pass
+you explicitly ordered, under a hard run budget - not on every stop.) (2) `/taste` validates every Codex finding
 against the actual code before you see it - raw cross-model reviews over-flag, and
 validation filters the false positives. (3) `/simmer` fills a gap neither the official
 plugin nor ralph-loop covers: a delegated implementer inside the loop with an

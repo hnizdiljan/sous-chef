@@ -6,6 +6,8 @@
   multi-file features, mechanical refactors, migrations, bulk boilerplate: anything you
   could hand a competent engineer as a written ticket. Announce every delegation in
   one line first: what's being handed off, to which model, expected wait.
+- For tasks the user wants done end to end without stops (implement, cross-review,
+  fix, verify), prefer /sous-chef:serve - one announcement, one report.
 - Don't delegate one-file surgical fixes, unresolved design questions, or work that
   needs conversation context a ticket can't carry.
 - Never poll a running Codex job; fire it in the background and let completion notify you.

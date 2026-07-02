@@ -7,7 +7,7 @@ compile; everything is markdown, JSON, and TOML.
 ## Map
 
 - `.claude-plugin/` - plugin + marketplace manifests
-- `skills/fire|taste|refire|simmer|mise/` - the five skills (each `SKILL.md` + optional `references/`)
+- `skills/serve|fire|taste|refire|simmer|mise/` - the six skills (each `SKILL.md` + optional `references/`)
 - `codex/` - Codex-side profiles shipped to `~/.codex/` (default + GLM-via-OpenRouter)
 - `templates/` - files `/mise` scaffolds into user repos and `~/.sous-chef/`
 - `docs/design.md` - research receipts behind every design decision

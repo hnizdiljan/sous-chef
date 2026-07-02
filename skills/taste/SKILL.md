@@ -50,9 +50,10 @@ Then, for EACH finding:
 
 ## 4. Report
 
-Lead with the verdict (ship / fix first), then confirmed findings ordered by severity, each with file:line, the failure scenario in one sentence, and the fix. Close with "N findings refuted on validation" if any. Do not apply fixes unless the user asked for that - the deliverable of a review is the assessment.
+Lead with the verdict (ship / fix first), then confirmed findings ordered by severity, each with file:line, the failure scenario in one sentence, and the fix. Close with "N findings refuted on validation" if any. Do not apply fixes unless the user asked for that - the deliverable of a review is the assessment. If the user wants the confirmed findings fixed, that is `/sous-chef:refire`.
 
 ## Notes
 
 - If OpenAI's official `codex` plugin is installed, `/codex:review` also exists. `/sous-chef:taste` differs on purpose: pinned read-only sandbox, scale-calibrated prompt, and the mandatory validation pass that filters false positives.
 - Two models agreeing after independent review is a strong ship signal; divergence means design a discriminating test, not a longer argument.
+- Inside `/sous-chef:serve`, taste runs as a pipeline stage the user ordered up front - that is not the automatic pre-commit trigger this skill's description forbids.
