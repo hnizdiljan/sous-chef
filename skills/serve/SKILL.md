@@ -14,9 +14,10 @@ them.
 1. **Fire** - per `/sous-chef:fire`: preflight, ticket, backgrounded run, plating with
    your own verification. If plating fails verification, one delta round (it counts
    against the serve budget) before moving on.
-2. **Taste** - per `/sous-chef:taste`: read-only cross-review of the resulting diff,
-   then your validation pass. Skip only if the diff is trivial (a few lines); say so
-   in the final report.
+2. **Taste** - per `/sous-chef:taste`: read-only cross-review scoped to the delta
+   against stage 1's pre-fire baseline - the user's pre-existing WIP is not part of
+   this order - then your validation pass. Skip only if the diff is trivial (a few
+   lines); say so in the final report.
 3. **Refire** - per `/sous-chef:refire`: if any findings were CONFIRMED, one scoped
    fix run, then re-verify each finding at its cited location.
 4. **Plate** - run the verification commands one final time and serve.

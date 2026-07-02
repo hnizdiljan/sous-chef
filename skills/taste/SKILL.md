@@ -18,6 +18,12 @@ git diff --shortstat && git diff --shortstat --cached
 
 - Working-tree review (default): staged + unstaged + untracked count as reviewable.
 - Branch review (user said "review this branch/PR"): scope with `git diff <base>...HEAD`.
+- Post-fire review (a pre-fire baseline exists - inside `/sous-chef:serve`, or tasting
+  a fire's result on a tree that was dirty before the fire): the change under review
+  is the delta since that baseline, never the whole tree. Scope the prompt to it -
+  name the files the run touched, and point at the baseline patch for files that mix
+  fired changes with prior WIP. Findings against pre-existing WIP would send a refire
+  rewriting the user's own uncommitted work; say in the report that WIP was excluded.
 - Empty scope → say there's nothing to review; don't run Codex on nothing.
 - **Large diffs review shallow.** If the scope exceeds ~1,500 changed lines, split into per-area passes or agree a focus with the user - and say that's why.
 

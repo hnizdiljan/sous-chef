@@ -3,7 +3,9 @@
 ```xml
 <task>
 Review the following change set in this repository as an independent senior engineer.
-Scope: [git working tree | git diff <base>...HEAD]
+Scope: [git working tree | git diff <base>...HEAD | post-fire delta: the changes in
+these files: <list>; hunks recorded in <absolute path>/pre-fire.patch predate this
+work and are OUT of scope - do not report findings on them]
 Focus (if any): [user-provided focus, e.g. "concurrency around the job queue"]
 Read the diff AND enough surrounding code to judge it in context. Do not modify anything.
 </task>
