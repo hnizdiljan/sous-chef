@@ -13,7 +13,10 @@ them.
 
 1. **Fire** - per `/sous-chef:fire`: preflight, ticket, backgrounded run, plating with
    your own verification. If plating fails verification, one delta round (it counts
-   against the serve budget) before moving on.
+   against the serve budget). The pipeline advances only on green verification: still
+   red after the delta means fix it yourself if a surgical fix will do, otherwise stop
+   and report honestly - tasting a known-broken implementation wastes the remaining
+   budget.
 2. **Taste** - per `/sous-chef:taste`: read-only cross-review scoped to the delta
    against stage 1's pre-fire baseline - the user's pre-existing WIP is not part of
    this order - then your validation pass. Skip only if the diff is trivial (a few
@@ -28,7 +31,8 @@ them.
   (typically 2-3 Codex runs, expect 15-45 minutes at high reasoning effort). Then run
   the pipeline without asking anything between stages.
 - Only interrupt the user for hard blockers: a failed run with an error they must act
-  on (auth, quota), a finding that survived its refire, or preflight failures.
+  on (auth, quota), verification still red after stage 1's delta (and any surgical
+  fix of your own), a finding that survived its refire, or preflight failures.
 - Every safety rule of the underlying skills still applies: background always, never
   poll, per-job dirs, outcome checks before trusting results, baseline-aware diffs.
 - Budget: at most 5 Codex runs total (fire, one delta if needed, taste, refire,
