@@ -135,10 +135,11 @@ them decide how the pieces stack before they collide mid-loop.
 ## 7. Smoke test
 
 ```bash
+SMOKE="$SCRATCHPAD/mise-smoke.log"  # $SCRATCHPAD = your session scratchpad directory - substitute its absolute path
 test -f ~/.codex/sous-chef.config.toml && \
 env -u CODEX_API_KEY -u CODEX_ACCESS_TOKEN codex exec --profile sous-chef --skip-git-repo-check \
-  -c model_reasoning_effort=low "Reply with exactly: MISE OK" > /tmp/mise-smoke.log 2>&1; \
-tail -5 /tmp/mise-smoke.log; grep -m1 'model:' /tmp/mise-smoke.log; grep -m1 'sandbox:' /tmp/mise-smoke.log
+  -c model_reasoning_effort=low "Reply with exactly: MISE OK" > "$SMOKE" 2>&1; \
+tail -5 "$SMOKE"; grep -m1 'model:' "$SMOKE"; grep -m1 'sandbox:' "$SMOKE"
 ```
 
 Success = the output contains `MISE OK` AND the banner's `sandbox:` line says
