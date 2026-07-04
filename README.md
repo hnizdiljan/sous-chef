@@ -165,6 +165,16 @@ worker's token count from the job log - and appends one JSON line to
 kept off Claude), or sum it yourself:
 `jq -s '{jobs: length, tokens: (map(.tokens) | add)}' ~/.sous-chef/ledger.jsonl`.
 
+**What does delegation actually save?** Measured 2026-07-04: three seeded tasks
+(mechanical refactor, mid-size feature, parser-class feature), each run both ways
+from a clean clone against identical checkable done-criteria - direct in a fresh
+Claude Code session (Fable 5) vs a sous-chef-profile `codex exec` (GPT-5.5, xhigh).
+All six runs green. Per task, Claude-side spend fell from 0.78-4.3M tokens
+(~$3.8-12.7 at cache-aware API list prices) to the ~5-7k-token orchestration
+overhead, with the worker burning 140-361k GPT-5.5 tokens (~$0.27-0.53) - roughly
+10-20x cheaper per task in effective API-price terms. Full method, per-task table,
+and caveats: [issue #2](../../issues/2).
+
 **What do I see while it cooks?** An announcement first: what was delegated, the
 expected duration (typically 5-20+ minutes per Codex run at high reasoning effort),
 and the log path. You keep working; Claude is re-invoked when the job exits. Cancel
