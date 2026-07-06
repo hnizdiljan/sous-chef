@@ -89,6 +89,14 @@ doc, or a measured comparison - collected via a multi-source research sweep on
 - The sanctioned path is detach-and-notify: `run_in_background` re-invokes the agent
   on exit ([interactive-mode docs](https://code.claude.com/docs/en/interactive-mode)),
   and the Monitor tool (April 2026) replaces polling with until-conditions.
+- Paced progress ticks compose with detach-and-notify rather than reverting to
+  polling: the [#54143](https://github.com/anthropics/claude-code/issues/54143)
+  failure mode is an unbounded polling loop, while a ticker is
+  bounded by the run, self-disarming on exit, and reads the local job log without
+  ever querying the worker. Pacing ticks under the prompt cache's 5-minute TTL keeps
+  each wakeup on a warm cache instead of re-reading the full conversation
+  ([prompt caching docs](https://platform.claude.com/docs/en/build-with-claude/prompt-caching)).
+  Completion still arrives via re-invocation; ticks only narrate the wait.
 
 ## Why AGENTS.md is the standards channel
 

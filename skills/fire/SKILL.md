@@ -67,13 +67,15 @@ Notes on the invocation:
 - `env -u CODEX_API_KEY -u CODEX_ACCESS_TOKEN` pins the run to the user's `codex login` (ChatGPT subscription) auth - those two are the only env vars that override it in `codex exec`, and if either is set the run silently bills per-token instead. (`OPENAI_API_KEY` is NOT read for auth by current Codex, and unsetting it would break custom providers that use it as their `env_key`.)
 - Prompt goes via stdin (`- <`) to avoid shell-quoting damage to the ticket.
 
-**Then tell the user, in one or two lines:** what was delegated and to which model (read `model` from `~/.codex/config.toml` - don't assert a model you didn't check), that it typically takes 5–20+ minutes at high reasoning effort, a paste-ready `tail -f "$JOB/job.log"` (absolute path) to watch it cook, the ticket at `$JOB/ticket.md` for what was ordered, and that they can cancel anytime.
+**Then tell the user, in one or two lines:** what was delegated and to which model (read `model` from `~/.codex/config.toml` - don't assert a model you didn't check), that it typically takes 5–20+ minutes at high reasoning effort, a paste-ready `tail -f "$JOB/job.log"` (absolute path) to watch it cook - warning that stray MCP transport noise early in the log is usually harmless, not the run failing - the ticket at `$JOB/ticket.md` for what was ordered, and that they can cancel anytime. Offer progress ticks (below) as a clause they can opt into by replying, not a blocking question.
 
 To route the ticket to GLM-5.2 instead (user opt-in), see [references/glm-routes.md](references/glm-routes.md) - same ticket, different worker invocation.
 
 ## While it cooks
 
 Do NOT poll - polling loops against a running Codex job are the documented way to incinerate quota while producing nothing. Work on something else or end your turn; the backgrounded job re-invokes you when it exits. If you must watch for a condition, arm a single Monitor with an until-loop on `$JOB/job.log` matching terminal states (completion AND error signatures like `ERROR:`, `stream disconnected`), not a poll loop.
+
+A long run need not be a silent one. If the user opted into progress ticks (or serve turned them on), arm a self-paced wakeup loop - `/loop` with no interval, or whatever wakeup scheduler the harness offers - with the absolute `$JOB/job.log` path in the armed prompt: a tick must not depend on conversation memory to find its log. Each tick, read the tail of the log and report ONE distilled line ("three files edited, tests running now"), then re-arm, pacing ticks a few minutes apart (under five, so each wakeup lands on a warm prompt cache). A tick that finds a terminal state in the log says nothing and does not re-arm - completion re-invokes you regardless, and reporting the outcome, like plating, belongs to that turn. This is not the forbidden polling: it is bounded by the run, disarms itself, reads a local file, and never queries the worker. No wakeup facility? The `tail -f` handoff stands alone.
 
 **If the user cancels:** kill the background task, then run `git status` + `git diff` - the workspace-write worker may have left a half-applied change. Show the user what's there and let them decide keep or revert.
 

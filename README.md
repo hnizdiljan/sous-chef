@@ -162,8 +162,10 @@ and caveats: [issue #2](../../issues/2).
 
 **What do I see while it cooks?** An announcement first: what was delegated, the
 expected duration (typically 5-20+ minutes per Codex run at high reasoning effort),
-and the log path. You keep working; Claude is re-invoked when the job exits. Cancel
-anytime - Claude kills the job and shows you any partial changes to keep or revert.
+and the log path. You keep working; Claude is re-invoked when the job exits. In a
+serve - or on request in a fire - Claude also posts a one-line progress tick every
+few minutes, distilled from the job log, until the run exits. Cancel anytime -
+Claude kills the job and shows you any partial changes to keep or revert.
 
 **Does Claude stop writing code?** No. Small fixes, prototypes, and anything
 design-ambiguous stay with Claude - the routing rules themselves say so. Delegation

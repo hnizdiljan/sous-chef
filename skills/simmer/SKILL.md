@@ -73,7 +73,8 @@ For each iteration, until the goal passes or the budget is spent:
    file is the judge's), and stop. When you launch, append `lap N: fired <abs job
    dir>` under `## Laps` - the budget counts launches, not landings, so a crash
    mid-lap can't un-spend a lap, and the job dir is how a later resume proves this
-   run's fate. Do not poll while it runs.
+   run's fate. Do not poll while it runs; progress ticks, if the user has them on,
+   follow fire's "While it cooks" - armed per lap, disarmed at lap exit.
 2. **Verify yourself** - when it exits, first check the job outcome (non-zero exit or
    missing result file = failed lap: rewrite its line to `lap N: fail - run error:
    <cause>`, read the log tail, surface the error, and decide with the user whether
