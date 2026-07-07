@@ -1,6 +1,6 @@
 ---
 name: fire
-description: Delegates a well-specified implementation task to Codex CLI (or opt-in GLM-5.2) in the background. Use when the user asks to hand work to Codex, or for substantial spec-able work - features, refactors, migrations, boilerplate; offer first unless the routing policy is autonomous. Not for small fixes or ambiguous design; never fire silently.
+description: Delegates a well-specified implementation task to Codex CLI (or, via --with, Claude Sonnet 5 or opt-in GLM-5.2) in the background. Use when the user asks to hand work to Codex, or for substantial spec-able work - features, refactors, migrations, boilerplate; offer first unless the routing policy is autonomous. Not for small fixes or ambiguous design; never fire silently.
 ---
 
 # Fire - hand the ticket to the sous-chef
@@ -51,6 +51,24 @@ Write the ticket to `$JOB/ticket.md` using the template in [references/ticket-te
 
 Repo-level standards (build commands, conventions, do-not-touch areas) belong in the repo's `AGENTS.md`, which Codex reads automatically on every run - don't duplicate them on the ticket. Run `/sous-chef:mise` once per repo to set that up.
 
+## Choosing the worker - `--with`
+
+The arguments may begin with `--with <worker>`; strip it before treating the
+rest as the task description. Workers:
+
+| `--with` | Worker | Route |
+|---|---|---|
+| *(absent)* / `codex` | GPT-5.5 via Codex CLI | the default invocation below |
+| `sonnet` | Claude Sonnet 5, user's own subscription | `references/glm-routes.md` Route C |
+| `glm` | GLM-5.2 | `references/glm-routes.md` Route A or B, whichever is installed |
+
+Loose phrases ("fire with sonnet", "use GLM for this") mean the same thing -
+`--with` is just the unambiguous spelling, immune to task text that happens
+to mention a model name. The ticket, job dir, and plating are identical for
+every worker; only the invocation changes. Preflight differs per worker:
+step 2's Codex-profile stop applies to the Codex route only - Route C's
+preflight is just `command -v claude`.
+
 ## Firing
 
 Run from the repo root (workspace-write scopes writes to the working directory), in the background - never in the foreground, where the Bash timeout ceiling kills long runs. Tool-level backgrounding is the only backgrounding: the command itself must NOT contain `&`, `nohup`, or `disown`, or Claude Code will track a wrapper that exits immediately, fire a false completion notification, and leave the real worker orphaned.
@@ -69,7 +87,7 @@ Notes on the invocation:
 
 **Then tell the user, in one or two lines:** what was delegated and to which model (read `model` from `~/.codex/config.toml` - don't assert a model you didn't check), that it typically takes 5–20+ minutes at high reasoning effort, a paste-ready `tail -f "$JOB/job.log"` (absolute path) to watch it cook - warning that stray MCP transport noise early in the log is usually harmless, not the run failing - the ticket at `$JOB/ticket.md` for what was ordered, and that they can cancel anytime. Offer progress ticks (below) as a clause they can opt into by replying, not a blocking question.
 
-To route the ticket to GLM-5.2 instead (user opt-in), see [references/glm-routes.md](references/glm-routes.md) - same ticket, different worker invocation.
+To route the ticket to GLM-5.2 (user opt-in) or to Claude Sonnet 5 on the user's own subscription (no extra key - the natural fallback when Codex hits its usage limit mid-serve), see [references/glm-routes.md](references/glm-routes.md) - same ticket, different worker invocation.
 
 ## While it cooks
 
@@ -81,15 +99,16 @@ A long run need not be a silent one. If the user opted into progress ticks (or s
 
 ## Plating - when the job exits
 
-1. **Check the outcome before trusting the plate.** If the job exited non-zero, or `$JOB/result.md` is missing or empty, the run failed - read the tail of `$JOB/job.log`, show the user the error verbatim, and offer one rerun or taking over yourself. Two errors worth naming for the user: "You've hit your usage limit" means wait for the plan's 5-hour window to reset (or escalate plans); a persistent `401` means their `codex login` needs redoing. Never present a missing result as a clean outcome. (MCP transport errors near the top of the log are usually harmless noise from the user's Codex-side MCP servers - the real signal is the last lines.)
+1. **Check the outcome before trusting the plate.** If the job exited non-zero, or `$JOB/result.md` is missing or empty, the run failed - read the tail of `$JOB/job.log`, show the user the error verbatim, and offer one rerun or taking over yourself. Two errors worth naming for the user: "You've hit your usage limit" means wait for the plan's 5-hour window to reset (or escalate plans) - or offer to continue now with `--with sonnet` (Route C); a persistent `401` means their `codex login` needs redoing. Never present a missing result as a clean outcome. (MCP transport errors near the top of the log are usually harmless noise from the user's Codex-side MCP servers - the real signal is the last lines.)
 2. Glance at the log's opening banner: its `sandbox:` line is ground truth for what actually ran. If it isn't `workspace-write`, say so.
 3. Read `$JOB/result.md`, then compare the post-baseline changed file set (`git status`/`git diff` minus `$JOB/pre-fire.*`) to the ticket's `<files>` Touch list. Outside-list paths are unresolved until classified: paths confirmed as another session's concurrent edits must be named with the warning `concurrent edit detected - these changes are NOT part of this run's review` and excluded from the worker-attributed delta, while paths that are the worker's own out-of-scope changes must be reverted or explicitly flagged to the user before the run can be accepted. This is a path-level check: it cannot catch a concurrent session editing a file that *is* on the Touch list - those edits merge into the same file's diff and only the line-by-line read in step 4 will separate them, so treat a Touch-listed file that changed more than the ticket asked as suspect too. Then review Codex's actual delta against `$JOB/pre-fire.patch` - don't attribute the user's own WIP to Codex.
 4. Review the diff carefully, line by line. Codex is a competent implementer that makes wrong assumptions without checking - that is exactly the failure mode you're here to catch.
 5. Run the `<verification>` commands yourself. Codex's claims are not evidence; command output is.
 6. Then either:
    - Accept - summarize what shipped and what you verified, plus the token usage
-     from the log's closing summary (the `tokens used` block near the end of
-     job.log) - quota spend is otherwise invisible to the user. Then add the job
+     from the log's closing summary when the log carries one (the `tokens used`
+     block near the end of job.log; Claude-worker routes emit none - say token
+     usage is unavailable) - quota spend is otherwise invisible to the user. Then add the job
      to the running tab: append one line to `~/.sous-chef/ledger.jsonl`
      (`mkdir -p ~/.sous-chef` first) of the form
      `{"ts":"<UTC ISO-8601>","repo":"<repo basename>","skill":"fire","model":"<model from the log banner>","tokens":<total from the closing summary>}`.
