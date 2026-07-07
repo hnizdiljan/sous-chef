@@ -21,3 +21,5 @@ compile; everything is markdown, JSON, and TOML.
   no `--full-auto`, no `[profiles.*]` tables.
 - Match the kitchen register lightly - names and taglines, not forced metaphors in
   instruction text.
+- `scripts/check.sh` is the executable invariant list - run it before a PR; CI runs
+  the same script on every PR and push to main.
