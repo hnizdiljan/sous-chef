@@ -2,14 +2,14 @@
 
 ![MIT](https://img.shields.io/badge/license-MIT-blue) ![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-d97757) ![Codex CLI ≥ 0.134](https://img.shields.io/badge/Codex_CLI-%E2%89%A50.134-black)
 
-**Fable 5 orchestrates and reviews; GPT-5.5 or GLM 5.2 implements. Your head chef doesn't chop onions.**
+**Fable 5 orchestrates and reviews; Sonnet 5, GPT-5.5, or GLM 5.2 implements. Your head chef doesn't chop onions.**
 
 A Claude Code plugin that splits coding between two frontier models the way a kitchen
 splits work. Fable plans, writes the ticket, reviews every diff line by line, and
-re-runs the checks itself. Codex or GLM do the implementation, with no say over what
-ships. The split is economic:
+re-runs the checks itself. Sonnet, Codex, or GLM does the implementation, with no say
+over what ships. The split is economic:
 Fable is the most expensive model on the line, so its tokens go to judgment and
-Codex or GLM tokens go to bulk. In the measured setup this pattern is built on,
+worker tokens go to bulk. In the measured setup this pattern is built on,
 [Codex did ~20x the implementation work](https://madewithlove.com/blog/claude-up-front-codex-in-the-back/)
 per orchestration round trip, and two mid-tier subscriptions often beat one top-tier one.
 
