@@ -49,7 +49,8 @@ Write `$JOB/ticket.md` with the fire template's XML blocks, specialized:
 - `<task>`: "Fix the review findings below. Each is confirmed against the code."
   Then one block per finding: file:line, the defect in one sentence, the evidence
   (quoted code), and the prescribed fix. Taste's `findings.md` is already in this
-  shape - carry its blocks over near-verbatim.
+  shape - carry its CONFIRMED blocks over near-verbatim; its refuted audit-trail
+  section is not refire input.
 - `<done_when>`: every listed finding resolved at its cited location, plus the repo's
   verification commands passing.
 - `<files>`: touch only files named in the findings. Everything else is off limits.

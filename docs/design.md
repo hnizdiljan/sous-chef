@@ -188,6 +188,14 @@ doc, or a measured comparison - collected via a multi-source research sweep on
 - Debate cap: two rounds, then take over - convergence between independent reviews is
   the signal; extended argument has diminishing returns.
   ([claude-codex-collab](https://github.com/AlessioZazzarini/claude-codex-collab))
+- Refutation verdicts persist: a REFUTED label is an unreviewed judgment call, and
+  previously the reasoning was discarded (report said "N refuted", nothing more),
+  so a wrongly refuted blocker died silently and its rate couldn't even be measured.
+  Now `findings.md` carries a refuted audit-trail section and the report names
+  refuted blockers with reasons - raised by the first community question on
+  cross-model disagreement, which also surfaced that a default serve is Codex
+  reviewing its own diff (hence serve's unconditional same-lineage disclosure).
+  ([issue #1](https://github.com/tomascupr/sous-chef/issues/1))
 - Fixing is deliberately a separate skill (`/refire`) rather than taste applying its
   own findings: the reviewer stays read-only by CLI flag (role separation that a
   prompt can't guarantee), and the review-to-fix boundary is exactly where a human can

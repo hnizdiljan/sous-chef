@@ -54,9 +54,11 @@ Then, for EACH finding:
 
 1. Open the cited file/line and check the claim against the actual code.
 2. Label it CONFIRMED (you verified the failure scenario is real) or REFUTED (state why - guard exists upstream, dead path, intentional per repo conventions, wrong about the API).
-3. Drop REFUTED findings from the main report; mention only their count.
+3. Drop REFUTED findings from the main report; mention only their count - except a
+   refuted blocker/major, which the report names with its refutation reason: a wrong
+   refutation on a serious finding must be visible enough for the user to overrule.
 
-Then write the CONFIRMED set to `$JOB/findings.md`: a header line (verdict, scope, refuted count), then one block per finding - severity, file:line, the defect in one sentence, the quoted evidence, the prescribed fix. Add a tree anchor to the header - `tree: $(git rev-parse --short HEAD)+$(idx=$(mktemp -u); GIT_INDEX_FILE=$idx git add -A && GIT_INDEX_FILE=$idx git write-tree | cut -c1-12)` (the temp-index write-tree makes untracked files count - a fire's newly created files are exactly what findings cite) - so a later refire can tell whether these file:line citations still describe the tree it is about to fire into. Write the file even when clean (`CONFIRMED: none`) so a clean taste is distinguishable from no taste. This file is the handoff to `/sous-chef:refire` - validated once, carried on disk, never reconstructed from memory.
+Then write the CONFIRMED set to `$JOB/findings.md`: a header line (verdict, scope, refuted count), then one block per finding - severity, file:line, the defect in one sentence, the quoted evidence, the prescribed fix. After the confirmed blocks, add a `## Refuted (audit trail - not refire input)` section: one line per refuted finding - severity, file:line, the claim, and why it fell. A REFUTED verdict is an unreviewed judgment call; persisting the reasoning is what makes it auditable later instead of dying with the session. Add a tree anchor to the header - `tree: $(git rev-parse --short HEAD)+$(idx=$(mktemp -u); GIT_INDEX_FILE=$idx git add -A && GIT_INDEX_FILE=$idx git write-tree | cut -c1-12)` (the temp-index write-tree makes untracked files count - a fire's newly created files are exactly what findings cite) - so a later refire can tell whether these file:line citations still describe the tree it is about to fire into. Write the file even when clean (`CONFIRMED: none`) so a clean taste is distinguishable from no taste. This file is the handoff to `/sous-chef:refire` - validated once, carried on disk, never reconstructed from memory.
 
 ## 4. Report
 
