@@ -123,6 +123,12 @@ as the slim starting point - and if the pick was autonomous, swap its manual rou
 block for the autonomous template so the installed mode matches the answer. Its
 Environment section is placeholder text they must edit to match their machine.
 
+Also grep `~/.claude/CLAUDE.md` for `Worker tiers (sous-chef`. If it is present,
+say tier routing is installed and leave it unchanged. If a routing block exists (or
+was just installed) but no tier block is present, fold one more optional question
+into the batched AskUserQuestion round offering to append
+`${CLAUDE_PLUGIN_ROOT}/templates/CLAUDE.tiers.md`. Never append a duplicate.
+
 If the autonomous block was installed, run the follow-ups:
 - Ask before adding `Bash(env -u CODEX_API_KEY -u CODEX_ACCESS_TOKEN codex exec*)` to
   `permissions.allow` in `~/.claude/settings.json`, creating the file/key if absent.
