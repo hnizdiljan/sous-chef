@@ -185,8 +185,11 @@ passes that choice to Codex for the run. Without the block, model and effort kee
 falling through to your Codex config exactly as before.
 
 **Which models?** Whatever your `~/.codex/config.toml` says - the shipped profile
-pins only sandbox and approval policy. Recommended: `gpt-5.5` with
-`model_reasoning_effort = "xhigh"`. GLM-5.2 ships as an opt-in second implementer
+pins only sandbox and approval policy. Recommended: `gpt-5.6-sol` with
+`model_reasoning_effort = "high"` (`max` for the hardest tickets); `gpt-5.6-terra`
+delivers 5.5-class output at half the price for standard work. Leave 5.6's ultra
+mode off for delegated background runs - it multiplies token spend by design, with
+nobody watching. GLM-5.2 ships as an opt-in second implementer
 ("fire with GLM"): it slightly out-benchmarks GPT-5.5 on SWE-bench Pro at a fraction
 of the per-token price, though ~3.3x more token-hungry. Two routes as templates
 (GLM Coding Plan via a headless Claude worker, or OpenRouter through Codex); `/mise`
