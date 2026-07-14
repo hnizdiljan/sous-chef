@@ -2,7 +2,7 @@
   "name": "sous-chef",
   "description": "Claude orchestrates and reviews; Sonnet, Codex, or GLM implements. Your head chef doesn't chop onions.",
   "owner": {
-    "name": "Tomas Cupr"
+    "name": "Jan Hnízdil"
   },
   "plugins": [
     {

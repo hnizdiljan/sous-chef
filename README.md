@@ -50,7 +50,7 @@ Requirements: [Codex CLI](https://developers.openai.com/codex/cli) ≥ 0.134,
 authenticated (`codex login` - a ChatGPT subscription is enough; no API key needed).
 
 ```text
-/plugin marketplace add tomascupr/sous-chef
+/plugin marketplace add hnizdiljan/sous-chef
 /plugin install sous-chef@sous-chef
 ```
 
