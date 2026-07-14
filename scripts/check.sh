@@ -59,9 +59,12 @@ must_contain skills/mise/SKILL.md 'Worker tiers (sous-chef' "mise detects the ti
 must_contain skills/fire/SKILL.md '-c model=' "fire names the CLI flag mechanism the tier policy requires"
 must_contain templates/CLAUDE.tiers.md '-c model=' "the tier policy names the CLI flag mechanism fire honors"
 
-# Every backgrounded worker invocation carries the no-nested-backgrounding rule.
-for f in $(grep -rl 'run_in_background: true' skills/); do
-  grep -q 'nohup' "$f" || err "$f backgrounds a worker but drops the no-&/nohup/disown rule"
+# Every skill that backgrounds a worker carries the no-nested-backgrounding rule -
+# literally (nohup named) or by an explicit pointer to fire's rule. Match the word
+# "backgrounded" too, not just the Bash annotation: refire and simmer background
+# workers by cross-reference without repeating the invocation block.
+for f in $(grep -rlE 'run_in_background: true|backgrounded' skills/); do
+  grep -qE 'nohup|backgrounding rule' "$f" || err "$f backgrounds a worker but carries neither the no-&/nohup/disown rule nor a pointer to fire's"
 done
 
 # One ledger line schema, defined once (fire); each writer names its own skill tag.
