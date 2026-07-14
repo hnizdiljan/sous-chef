@@ -2,10 +2,28 @@
 
 ![MIT](https://img.shields.io/badge/license-MIT-blue) ![Claude Code plugin](https://img.shields.io/badge/Claude_Code-plugin-d97757) ![Codex CLI ≥ 0.134](https://img.shields.io/badge/Codex_CLI-%E2%89%A50.134-black)
 
-**Fable 5 orchestrates and reviews; Sonnet 5, GPT-5.5, or GLM 5.2 implements. Your head chef doesn't chop onions.**
+**Fable 5 orchestrates and reviews; Sonnet 5, GPT-5.5/5.6, or GLM 5.2 implements. Your head chef doesn't chop onions.**
 
 A fork of [tomascupr/sous-chef](https://github.com/tomascupr/sous-chef) by Tomas Cupr -
 that kitchen wrote the recipes this one builds on.
+
+## What this fork adds
+
+Everything upstream ships, the four open upstream PRs ported with authorship
+preserved (the 86 list, GPT-5.6 GA pricing in receipts, hardened self-checks),
+and on top of those:
+
+- **GPT-5.6 tier routing** - an optional policy block in `~/.claude/CLAUDE.md` maps
+  each ticket's shape to `gpt-5.6-sol` / `terra` / `luna` (architecture / daily
+  driver / mechanical bulk), passed per run as CLI flags. taste always reviews at
+  full strength - reviewer strength beats reviewer cost.
+- **Failure escalation** - a run that fails its own ticket is evidence the shape was
+  misjudged: the retry goes one tier up, never back to the tier that failed.
+- **Refire rides every route** - `--with` and serve's `worker:` line apply to the
+  whole line, so a fix run follows the same worker (Codex, Sonnet, or GLM) as the
+  fire that preceded it.
+
+Details per release: [releases](https://github.com/hnizdiljan/sous-chef/releases).
 
 A Claude Code plugin that splits coding between two frontier models the way a kitchen
 splits work. Fable plans, writes the ticket, reviews every diff line by line, and
@@ -43,7 +61,7 @@ what remains is goal-shaped, it offers to continue as a simmer.
 |---|---|
 | `/sous-chef:fire` | Write the ticket, delegate one implementation run, review the diff against a pre-fire baseline, verify. |
 | `/sous-chef:taste` | Cross-model review, read-only. Claude validates every finding against the code and filters false positives before you see them. |
-| `/sous-chef:refire` | Turn the confirmed findings from a taste into one scoped fix run, then re-verify each finding at its cited location. |
+| `/sous-chef:refire` | Turn the confirmed findings from a taste into one scoped fix run on the same worker the line was fired with, then re-verify each finding at its cited location. |
 | `/sous-chef:mise` | Setup: Codex CLI + auth checks, delegation profile, `AGENTS.md` scaffold, routing policy (manual or autonomous). Once per machine, once per repo. |
 | `/sous-chef:receipts` | Print the check: the repo's last ten run receipts as a table with a savings total; reprint any receipt's shareable summary. |
 
@@ -190,9 +208,11 @@ is announced, never silent - in both routing modes.
 
 **Can worker cost scale with the task?** Yes - `/mise` can optionally append a
 user-side tier policy next to the routing-mode block in `~/.claude/CLAUDE.md`. Fire
-then maps the ticket's existing task-shape classification to sol, terra, or luna and
-passes that choice to Codex for the run. Without the block, model and effort keep
-falling through to your Codex config exactly as before.
+then maps the ticket's existing task-shape classification to `gpt-5.6-sol`,
+`gpt-5.6-terra`, or `gpt-5.6-luna` and passes that choice to Codex for the run.
+A failed run escalates: the retry goes one tier up, never back to the tier that
+failed. Without the block, model and effort keep falling through to your Codex
+config exactly as before.
 
 **Which models?** Whatever your `~/.codex/config.toml` says - the shipped profile
 pins only sandbox and approval policy. Recommended: `gpt-5.6-sol` with
