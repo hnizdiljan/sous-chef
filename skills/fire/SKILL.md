@@ -80,7 +80,10 @@ CLI `-c` flags beat both the profile and `~/.codex/config.toml`. The one-line
 announcement names the flagged tier plus a one-clause reason instead of reading the
 model from config. With no block, today's config fall-through is unchanged. The
 policy rides wherever this invocation pattern is reused: refire fix runs and simmer
-laps route by their own ticket's shape; taste stays on the config default. The CLI
+laps route by their own ticket's shape; taste stays on the config default. Failure
+outranks shape: a delta round retries one tier up from the tier that failed, never
+on it - a run that failed its own ticket is evidence the shape was misjudged (above
+sol there is no next tier: take over yourself, per plating's cap). The CLI
 does not client-side validate the effort string against the model: the banner's
 `reasoning effort:` line echoes what was requested, not necessarily what ran.
 

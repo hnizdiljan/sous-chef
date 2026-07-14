@@ -64,6 +64,8 @@ must_contain skills/fire/SKILL.md 'Worker tiers (sous-chef' "fire detects the ti
 must_contain skills/mise/SKILL.md 'Worker tiers (sous-chef' "mise detects the tier policy heading before offering it"
 must_contain skills/fire/SKILL.md '-c model=' "fire names the CLI flag mechanism the tier policy requires"
 must_contain templates/CLAUDE.tiers.md '-c model=' "the tier policy names the CLI flag mechanism fire honors"
+must_contain templates/CLAUDE.tiers.md 'one tier up' "the tier policy carries the failure-escalation rule fire enforces"
+must_contain skills/fire/SKILL.md 'one tier up' "fire enforces the failure-escalation rule the tier policy states"
 
 # Every skill that backgrounds a worker carries the no-nested-backgrounding rule -
 # literally (nohup named) or by an explicit pointer to fire's rule. Match the word

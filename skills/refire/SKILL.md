@@ -76,6 +76,9 @@ preflight change, per fire's [glm-routes.md](../fire/references/glm-routes.md).
 Tier policy rides along on the Codex route (fire's "Choosing the tier"): pick the
 tier by the refire ticket's shape, not the original feature's - a scoped fix run
 is usually terra-shaped even when the feature that produced it was sol-shaped.
+The exception runs the other way: findings that show broad misunderstanding rather
+than isolated slips are evidence the original tier was undersized - route the refire
+above the tier that produced them, not by the fix ticket's shape.
 
 ## Firing and plating
 
