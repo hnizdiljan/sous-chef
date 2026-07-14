@@ -1,6 +1,6 @@
 {
   "name": "sous-chef",
-  "description": "Claude orchestrates and reviews; Sonnet, Codex, or GLM implements. Your head chef doesn't chop onions.",
+  "description": "Claude orchestrates and reviews; Sonnet, Codex, or GLM implements. Your head chef doesn't chop onions. A fork of tomascupr/sous-chef by Tomas Cupr.",
   "owner": {
     "name": "Jan Hnízdil"
   },
