@@ -26,8 +26,12 @@ actually gone.
 Same as fire, and for the same reasons:
 
 1. Git repo with at least one commit (`git rev-parse HEAD`).
-2. `test -f ~/.codex/sous-chef.config.toml`; missing means stop and offer
-   `/sous-chef:mise` (Codex silently ignores a missing profile).
+2. Worker preflight for the route chosen below. The Codex route requires
+   `test -f ~/.codex/sous-chef.config.toml`; missing means stop and offer
+   `/sous-chef:mise` (Codex silently ignores a missing profile). Alternate
+   routes carry their own preflight in fire's
+   [glm-routes.md](../fire/references/glm-routes.md) - Route C's is just
+   `command -v claude`.
 3. Mint a fresh job dir: `JOB=$(mktemp -d "$SCRATCHPAD/refire-XXXXXX")`
    (`$SCRATCHPAD` is your session scratchpad directory; substitute its absolute path).
 4. Snapshot the tree: save `git diff` and `git status --short` into `$JOB` as the
@@ -60,11 +64,27 @@ Write `$JOB/ticket.md` with the fire template's XML blocks, specialized:
 - `<output_contract>`: CHANGED / VERIFIED / OPEN, with a per-finding line under
   CHANGED stating how each was resolved.
 
+## Choosing the worker
+
+Fire's worker table applies (`--with codex|sonnet|glm` - see `/sous-chef:fire`).
+Precedence: an explicit `--with` on the refire wins; inside a serve, the `worker:`
+line in the run's `state.md` decides - serve's `--with` applies to the whole line,
+fire and refire alike; standalone with neither, the Codex default. The findings,
+ticket, and plating are identical for every worker - only the invocation and
+preflight change, per fire's [glm-routes.md](../fire/references/glm-routes.md).
+
+Tier policy rides along on the Codex route (fire's "Choosing the tier"): pick the
+tier by the refire ticket's shape, not the original feature's - a scoped fix run
+is usually terra-shaped even when the feature that produced it was sol-shaped.
+
 ## Firing and plating
 
-Identical to fire, backgrounding rule included: backgrounded profiled run from the
-repo root, announce it in one line (what, which model, expected minutes, log path,
-cancel offer), no polling. Fire's ledger line applies too, with `"skill":"refire"`.
+Identical to fire for the chosen worker, backgrounding rule included: a backgrounded
+run from the repo root using that route's invocation (the profiled `codex exec` by
+default; Routes A/C per glm-routes.md), announce it in one line (what, which model,
+expected minutes, log path, cancel offer), no polling. Fire's ledger line applies
+too, with `"skill":"refire"` - including its skip rule (Claude-worker routes emit
+no token summary; never invent one).
 
 At plating, in addition to fire's outcome checks (exit code, result file present,
 sandbox banner):

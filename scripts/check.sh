@@ -46,11 +46,17 @@ must_contain skills/simmer/SKILL.md 'started:'  "the receipt template reads loop
 must_contain skills/serve/SKILL.md  'findings:' "refire (via serve) reads state.md's findings: line"
 must_contain skills/serve/SKILL.md  'baseline:' "taste's post-fire scope reads state.md's baseline: line"
 must_contain skills/taste/SKILL.md  'tree:'     "refire's preflight reads findings.md's tree: anchor"
+must_contain skills/serve/SKILL.md  'worker:'   "refire reads state.md's worker: line for whole-line routing"
 
 # The taste/refire tree anchor is one recipe, spelled identically on both sides.
 ANCHOR='$(git rev-parse --short HEAD)+$(idx=$(mktemp -u); GIT_INDEX_FILE=$idx git add -A && GIT_INDEX_FILE=$idx git write-tree | cut -c1-12)'
 must_contain skills/taste/SKILL.md  "$ANCHOR" "taste writes the anchor refire recomputes"
 must_contain skills/refire/SKILL.md "$ANCHOR" "refire recomputes the anchor taste writes"
+
+# Serve promises --with applies to the whole line - refire must know the flag
+# and name the alternate-route invocations it honors (issue #9, item 4).
+must_contain skills/refire/SKILL.md '--with' "serve promises --with applies to fire and refire alike"
+must_contain skills/refire/SKILL.md 'glm-routes.md' "refire names the alternate-route invocations it must honor"
 
 # The optional worker-tier policy heading and CLI mechanism agree with both readers.
 must_contain templates/CLAUDE.tiers.md 'Worker tiers (sous-chef' "the tier policy carries the heading fire and mise detect"
